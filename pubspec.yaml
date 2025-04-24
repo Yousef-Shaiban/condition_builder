@@ -1,0 +1,7 @@
+name: condition_builder
+description: "A Dart package for building and evaluating conditional logic chains in a fluent and readable way, with support for both synchronous and asynchronous operations."
+version: 1.0.0
+homepage: https://github.com/Yousef-Shaiban/condition_builder
+
+environment:
+  sdk: ^3.7.2

@@ -1,0 +1,8 @@
+formatter:
+  page_width: 100
+
+linter:
+  rules:
+    - public_member_api_docs
+# Additional information about this file can be found at
+# https://dart.dev/guides/language/analysis-options
