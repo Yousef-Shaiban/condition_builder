@@ -39,13 +39,13 @@ class _DemoState extends State<Demo> {
             margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: ConditionBuilder<Color>().on(() => isDisabled, () => Colors.grey.shade300).on(() => isSelected, () => Colors.blue.shade300).build(orElse: () => Colors.black12),
+              color: ConditionBuilder.on(() => isDisabled, () => Colors.grey.shade300).on(() => isSelected, () => Colors.blue.shade300).build(orElse: () => Colors.black12),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              ConditionBuilder<String>().on(() => isDisabled, () => 'Disabled').on(() => isSelected, () => 'Selected').build(orElse: () => 'Normal'),
+              ConditionBuilder.on(() => isDisabled, () => 'Disabled').on(() => isSelected, () => 'Selected').build(orElse: () => 'Normal'),
               style: TextStyle(
-                color: ConditionBuilder<Color>().on(() => isDisabled, () => Colors.black38).build(orElse: () => Colors.white),
+                color: ConditionBuilder.on(() => isDisabled, () => Colors.black38).build(orElse: () => Colors.white),
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),

@@ -17,6 +17,21 @@ class _Condition<T> {
 class ConditionBuilder<T> {
   final List<_Condition<T>> _conditions = [];
 
+  /// Creates a [ConditionBuilder] with a single initial condition.
+  ///
+  /// This named constructor allows quick inline usage without needing to
+  /// instantiate the builder and then call `.on(...)` separately.
+  ///
+  /// Example:
+  /// ```dart
+  /// final color = ConditionBuilder.on(() => isDarkMode, () => Colors.black)
+  ///   .on(() => isHighContrast, () => Colors.amber)
+  ///   .build(orElse: () => Colors.white);
+  /// ```
+  ConditionBuilder.on(bool Function() condition, T Function() value) {
+    _conditions.add(_Condition(condition: condition, value: value));
+  }
+
   /// Adds a synchronous condition and its corresponding value to the builder.
   ConditionBuilder<T> on(bool Function() condition, T Function() value) {
     _conditions.add(_Condition(condition: condition, value: value));

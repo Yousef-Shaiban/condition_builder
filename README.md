@@ -17,8 +17,7 @@ A tiny Flutter utility that helps you write clean, readable multi-way conditiona
 Instead of writing nested `if`/`else` or ternary (`?:`) operators, you define your logic declaratively:
 
 ```dart
-ConditionBuilder<Color>()
-  .on(() => someCondition, () => someColor)
+ConditionBuilder<Color>.on(() => someCondition, () => someColor)
   .on(() => anotherCondition, () => anotherColor)
   .build(orElse: () => defaultColor);
 ```
@@ -42,8 +41,7 @@ Then, run `flutter pub get` to install the package.
 ### ✅ With `ConditionBuilder`
 
 ```dart
-color: ConditionBuilder<Color>()
-  .on(() => isDisabled, () => Colors.grey)
+color: ConditionBuilder<Color>.on(() => isDisabled, () => Colors.grey)
   .on(() => isSelected, () => Colors.blue)
   .build(orElse: () => Colors.black12),
 ```

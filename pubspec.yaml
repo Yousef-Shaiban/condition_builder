@@ -1,6 +1,6 @@
 name: condition_builder
-description: "A tiny Flutter utility that helps you write clean, readable multi-way conditional logic directly inside widget attributes — without `if`/`else` and without nested complex ternary statements."
-version: 2.0.0
+description: "A tiny Flutter utility that helps you write clean, readable multi-way conditional logic directly inside widget attributes"
+version: 2.1.0
 homepage: https://github.com/Yousef-Shaiban/condition_builder
 
 environment:
