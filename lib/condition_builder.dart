@@ -1,55 +1,37 @@
 /// Represents a condition and its associated value.
-class Condition<T> {
+class _Condition<T> {
   /// The function that determines if the condition is met.
   final bool Function() condition;
 
-  /// The function that provides the value when the condition is met.
+  /// The function that provides the value if the condition is met.
   final T Function() value;
 
-  /// Creates a new Condition.
-  Condition({required this.condition, required this.value});
+  /// Creates a new [_Condition].
+  _Condition({required this.condition, required this.value});
 }
 
-/// A builder for creating a chain of conditional values.
+/// A builder for chaining multiple synchronous conditions and returning
+/// the value associated with the first satisfied condition.
+///
+/// If no condition matches, the optional fallback value set by [orElse] is returned.
 class ConditionBuilder<T> {
-  final List<Condition<T>> _conditions = [];
-  T Function()? _orElseValue;
+  final List<_Condition<T>> _conditions = [];
 
-  /// Adds a condition and its corresponding value to the builder.
-  ///
-  /// [condition]: The function that checks the condition.
-  /// [value]: The function that provides the result if the condition is true.
+  /// Adds a synchronous condition and its corresponding value to the builder.
   ConditionBuilder<T> on(bool Function() condition, T Function() value) {
-    _conditions.add(Condition(condition: condition, value: value));
-    return this;
-  }
-
-  /// Adds a condition and value only if the [includeIf] boolean is true.
-  ConditionBuilder<T> onIf(
-    bool Function() includeIf,
-    bool Function() condition,
-    T Function() value,
-  ) {
-    if (includeIf()) {
-      on(condition, value);
-    }
-    return this;
-  }
-
-  /// Sets the value to return if none of the conditions are met.
-  ConditionBuilder<T> orElse(T Function() value) {
-    _orElseValue = value;
+    _conditions.add(_Condition(condition: condition, value: value));
     return this;
   }
 
   /// Evaluates the conditions in order and returns the value of the first
-  /// met condition. Returns the orElse value if no conditions are met.
-  /// Throws an assertion error if no conditions are provided.
-  T? build() {
-    assert(
-      _conditions.isNotEmpty,
-      "ConditionBuilder error: you must provide at least one condition",
-    );
+  /// condition that evaluates to `true`.
+  ///
+  /// If no condition matches, the [orElse] parameter is used if provided.
+  ///
+  /// Throws an [AssertionError] if no conditions are added.
+  /// Throws a [StateError] if no condition is met and no fallback is available.
+  T build({T Function()? orElse}) {
+    assert(_conditions.isNotEmpty, "ConditionBuilder: you must provide at least one condition.");
 
     for (final condition in _conditions) {
       if (condition.condition()) {
@@ -57,71 +39,10 @@ class ConditionBuilder<T> {
       }
     }
 
-    return _orElseValue?.call();
-  }
-}
-
-// --- Async Version ---
-
-/// Represents an asynchronous condition and its associated value.
-class AsyncCondition<T> {
-  /// The asynchronous function that determines if the condition is met.
-  final Future<bool> Function() condition;
-
-  /// The asynchronous function that provides the value when the condition is met.
-  final Future<T> Function() value;
-
-  /// Creates a new AsyncCondition.
-  AsyncCondition({required this.condition, required this.value});
-}
-
-/// A builder for creating a chain of asynchronous conditional values.
-class AsyncConditionBuilder<T> {
-  final List<AsyncCondition<T>> _conditions = [];
-  Future<T> Function()? _orElseValue;
-
-  /// Adds an asynchronous condition and its corresponding value to the builder.
-  ///
-  /// [condition]: The asynchronous function that checks the condition.
-  /// [value]: The asynchronous function that provides the result if the condition is true.
-  AsyncConditionBuilder<T> on(Future<bool> Function() condition, Future<T> Function() value) {
-    _conditions.add(AsyncCondition(condition: condition, value: value));
-    return this;
-  }
-
-  /// Adds an asynchronous condition and value only if the [includeIf] boolean is true.
-  AsyncConditionBuilder<T> onIf(
-    bool Function() includeIf,
-    Future<bool> Function() condition,
-    Future<T> Function() value,
-  ) {
-    if (includeIf()) {
-      on(condition, value);
-    }
-    return this;
-  }
-
-  /// Sets the asynchronous value to return if none of the conditions are met.
-  AsyncConditionBuilder<T> orElse(Future<T> Function() value) {
-    _orElseValue = value;
-    return this;
-  }
-
-  /// Evaluates the asynchronous conditions in order and returns the asynchronous
-  /// value of the first met condition. Returns the orElse asynchronous value
-  /// if no conditions are met. Throws an assertion error if no conditions are provided.
-  Future<T?> build() async {
-    assert(
-      _conditions.isNotEmpty,
-      "AsyncConditionBuilder error: you must provide at least one condition",
-    );
-
-    for (final condition in _conditions) {
-      if (await condition.condition()) {
-        return await condition.value();
-      }
+    if (orElse != null) {
+      return orElse();
     }
 
-    return _orElseValue?.call();
+    throw StateError("ConditionBuilder: No condition was met and no orElse value was provided.");
   }
 }

@@ -1,15 +1,27 @@
-# condition_builder
+# 🧩 condition_builder
 
-A Dart package for building and evaluating conditional logic chains in a fluent and readable way, with support for both synchronous and asynchronous operations.
+A tiny Flutter utility that helps you write clean, readable multi-way conditional logic directly inside widget attributes — without `if`/`else` and without nested complex ternary statements.
 
-## ✨ Features
+- The core usage pattern is simple: chain multiple `.on(condition, value)` calls, then call `.build()` to get the matching value.
+- The order of conditions matters — the first condition that matches will be used.
+- You can optionally provide a fallback using `build(orElse: () => defaultValue)`.
+- If no condition matches and no fallback is provided, an error will be thrown to alert you.
+- The `build()` method never returns `null`.
 
--   **Fluent API:** Define conditional logic using a clear, chainable builder syntax (`.on(...).orElse(...)`).
--   **Synchronous Builder:** Easily handle synchronous conditions and return synchronous values.
--   **Asynchronous Builder:** Seamlessly work with `Future`-based conditions and return `Future` values.
--   **Conditional Inclusion:** Use `.onIf(...)` to include or exclude conditions based on other runtime boolean values.
--   **Lazy Evaluation:** Conditions and their associated values are evaluated only when the `.build()` method is called and only for the first condition that is met.
--   **Clear Structure:** Improves readability and maintainability compared to complex nested if-else statements for multi-way branching.
+---
+
+## ✨ Why use it?
+
+`condition_builder` is designed to simplify anything based on multiple runtime conditions
+
+Instead of writing nested `if`/`else` or ternary (`?:`) operators, you define your logic declaratively:
+
+```dart
+ConditionBuilder<Color>()
+  .on(() => someCondition, () => someColor)
+  .on(() => anotherCondition, () => anotherColor)
+  .build(orElse: () => defaultColor);
+```
 
 ## 🚀 Installation
 
@@ -24,57 +36,27 @@ Then, run `flutter pub get` to install the package.
 
 ---
 
-## 🏗️ Usage Example
+## 🔍 Comparison: With vs Without `ConditionBuilder`
+
+
+### ✅ With `ConditionBuilder`
 
 ```dart
-String determineWeatherDescription(int temperature) {
-  return ConditionBuilder<String>()
-      .on(() => temperature < 0, () => "It's freezing!")
-      .on(() => temperature >= 0 && temperature < 10, () => "It's cold.")
-      .onIf(
-        () =>
-          DateTime.now().month > 5 &&
-          DateTime.now().month < 9, // Only add 'pleasant' in summer months
-        () => temperature >= 10 && temperature < 25,
-        () => "It's a pleasant warm day.",
-      )
-      .onIf(
-        () => temperature < 40, // If it's extremely hot, don't just say "It's hot."
-        () => temperature >= 25,
-        () => "It's hot!",
-      )
-      .orElse(() => "Temperature out of expected range.")
-      .build()!; // Use ! if you are sure orElse will always be hit or you handle null
-}
-
-void main() {
-  print(determineWeatherDescription(-5)); // Output: It's freezing!
-  print(determineWeatherDescription(15)); // Output depends on the month
-  print(determineWeatherDescription(30)); // Output: It's hot!
-}
+color: ConditionBuilder<Color>()
+  .on(() => isDisabled, () => Colors.grey)
+  .on(() => isSelected, () => Colors.blue)
+  .build(orElse: () => Colors.black12),
 ```
 
----
+### ❌ Without `ConditionBuilder` (using ternary)
 
-## ⚡ Asynchronous Example
-
-For scenarios involving `Future`-based conditions or values (e.g., fetching data from an API, performing database operations, waiting for delays), use the `AsyncConditionBuilder`. It works similarly to the synchronous builder but handles asynchronous operations gracefully. The `AsyncCondition` class encapsulates a single asynchronous condition and its corresponding asynchronous value. When using the `AsyncConditionBuilder`, both the `condition` and `value` functions you provide to the `.on()`, `.onIf()`, and `.orElse()` methods **must be marked with the `async` keyword** and **must return a `Future`**.
-
-The `.build()` method of `AsyncConditionBuilder` is also `async` and must be `await`ed when called. The builder will `await` each condition's evaluation in order until one returns `true`, then `await` its corresponding value function before returning the final `Future` result.
-
----
-
-## 🤔 Why use this pattern?
-
-This pattern is beneficial when you have:
-
--   Multiple distinct conditions that determine a single outcome value.
-
--   Conditions or values that require potentially expensive computations or asynchronous operations that should only run if necessary.
-
--   A desire to make complex conditional logic more readable and structured than complex nested if-else statements for multi-way branching.
-
--   A need to conditionally include or exclude entire conditions based on other factors at runtime.
+```dart
+color: isDisabled
+    ? Colors.grey
+    : isSelected
+        ? Colors.blue
+        : Colors.black12,
+```
 
 ---
 
